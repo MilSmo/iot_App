@@ -1,0 +1,211 @@
+// import React, { useEffect, useState } from 'react';
+// import { View, Button, Modal, FlatList, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+// import { NavigationProp } from '@react-navigation/native';
+// import { FIREBASE_AUTH, FIREBASE_DB } from '../../FirebaseConfig';
+// import { addDoc, collection, getDocs, query } from 'firebase/firestore';
+// import BleManager from 'react-native-ble-manager';
+
+// interface RouterProps {
+//   navigation: NavigationProp<any, any>;
+// }
+
+// interface Device {
+//   id: string;
+//   name: string;
+//   type: string;
+// }
+
+// const DeviceList = ({ navigation }: RouterProps) => {
+//   const [devices, setDevices] = useState<Device[]>([]);
+//   const [deviceName, setDeviceName] = useState('');
+//   const [deviceType, setDeviceType] = useState('');
+//   const [deviceId, setDeviceId] = useState('');
+//   const [isModalVisible, setIsModalVisible] = useState(false);
+
+//   useEffect(() => {
+//     const fetchUserDevices = async () => {
+//       const user = FIREBASE_AUTH.currentUser;
+//       if (user) {
+//         const devicesQuery = query(collection(FIREBASE_DB, `users/${user.uid}/devices`));
+//         const querySnapshot = await getDocs(devicesQuery);
+//         const fetchedDevices: Device[] = [];
+//         querySnapshot.forEach((doc) => {
+//           fetchedDevices.push({ id: doc.id, ...doc.data() } as Device);
+//         });
+//         setDevices(fetchedDevices);
+//       }
+//     }
+//     fetchUserDevices();
+
+
+//     // const fetchDevices = async () => {
+//     //   const user = FIREBASE_AUTH.currentUser;
+//     //   if (user) {
+//     //     const devicesQuery = query(collection(FIREBASE_DB, `users/${user.uid}/devices`));
+//     //     const querySnapshot = await getDocs(devicesQuery);
+//     //     const fetchedDevices: Device[] = [];
+//     //     querySnapshot.forEach((doc) => {
+//     //       fetchedDevices.push({ id: doc.id, ...doc.data() } as Device);
+//     //     });
+//     //     setDevices(fetchedDevices);
+//     //   }
+//     // };
+
+//     // fetchDevices();
+//   }, []);
+
+//   const openModal = () => setIsModalVisible(true);
+//   const closeModal = () => setIsModalVisible(false);
+// const refreshDevices = async () => {
+//     const user = FIREBASE_AUTH.currentUser;
+//     if (user) {
+//       const devicesQuery = query(collection(FIREBASE_DB, `users/${user.uid}/devices`));
+//       const querySnapshot = await getDocs(devicesQuery);
+//       const fetchedDevices: Device[] = [];
+//       querySnapshot.forEach((doc) => {
+//         fetchedDevices.push({ id: doc.id, ...doc.data() } as Device);
+//       });
+//       setDevices(fetchedDevices);
+//     }
+//   };
+//   const addDevice = async () => {
+//     const user = FIREBASE_AUTH.currentUser;
+//     if (user) {
+//       await addDoc(collection(FIREBASE_DB, `users/${user.uid}/devices`), {
+//         name: deviceName,
+//         type: deviceType,
+//         userId: user.uid, 
+//         deviceId
+//       });
+//       setDeviceName('');
+//       setDeviceType('');
+//       setDeviceId('');
+      
+//       closeModal();
+//         refreshDevices();
+
+
+//     }
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//        <TouchableOpacity activeOpacity={0.5} >
+//             <Text>Scan Bluetooth Devices </Text>
+//           </TouchableOpacity>
+
+//       <FlatList
+//         data={devices}
+//         keyExtractor={(item) => item.id}
+//         renderItem={({ item }) => (
+//           <View style={styles.listItem}>
+//             <Text style={styles.itemText}>{item.name} ({item.type})</Text>
+//             <Button
+//               title="Details"
+//               onPress={() => navigation.navigate('Details', { deviceId: item.id })}
+//             />
+//           </View>
+//         )}
+//       />
+//       <View style={styles.buttons}>
+//         <Button title="Add Device" onPress={openModal} />
+//         <Button title="Refresh" onPress={refreshDevices} />
+//         <Button title="Log out" onPress={() => FIREBASE_AUTH.signOut()} />
+//         </View>
+//         <Text></Text>
+//         <Text style={{margin:20}}></Text>
+//       <Modal
+//         animationType="slide"
+//         transparent={true}
+//         visible={isModalVisible}
+//         onRequestClose={closeModal}>
+//         <View style={styles.centeredView}>
+//           <View style={styles.modalView}>
+//             <TextInput
+//               placeholder="Device Name"
+//               value={deviceName}
+//               onChangeText={setDeviceName}
+//               style={styles.input}
+//             />
+//             <TextInput
+//               placeholder="Device Type"
+//               value={deviceType}
+//               onChangeText={setDeviceType}
+//               style={styles.input}
+//             />
+//             <TextInput
+//               placeholder="Device ID"
+//               value={deviceId}
+//               onChangeText={setDeviceId}
+//               style={styles.input}
+//             />
+//             <Button title="Submit" onPress={addDevice} />
+//             <Button title="Cancel" onPress={closeModal} />
+//           </View>
+// </View>
+// </Modal>
+// </View>
+// );
+// };
+
+// const styles = StyleSheet.create({
+// container: {
+// flex: 1,
+// justifyContent: 'center',
+// alignItems: 'center',
+// },
+// input: {
+// height: 40,
+// margin: 12,
+// borderWidth: 1,
+// padding: 10,
+// width: 200,
+// borderRadius: 10,
+// borderColor: 'gray'
+// },
+// centeredView: {
+// flex: 1,
+// justifyContent: 'center',
+// alignItems: 'center',
+// marginTop: 22,
+// },
+// modalView: {
+// margin: 20,
+// backgroundColor: 'white',
+// borderRadius: 20,
+// padding: 35,
+// alignItems: 'center',
+// shadowColor: '#000',
+// shadowOffset: {
+// width: 0,
+// height: 2,
+// },
+// shadowOpacity: 0.25,
+// shadowRadius: 4,
+// elevation: 5,
+// },
+// listItem: {
+//     backgroundColor: '#f8f8f8',
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#eee',
+//     paddingHorizontal: 15,
+//     paddingVertical: 20,
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     justifyContent: 'space-between',
+//     width: 300
+//   },
+//   itemText: {
+//     fontSize: 18,
+//   },
+//   buttons: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     justifyContent: 'space-between',
+//     width: 300,
+
+//   },
+
+// });
+
+// export default DeviceList;
